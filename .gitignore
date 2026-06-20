@@ -1,0 +1,21 @@
+# Build artifacts
+bin/
+*.o
+*.out
+
+# LaTeX build files
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+report/*.fdb_latexmk
+report/*.fls
+report/*.pdf
+
+# OS/editor
+.DS_Store
+*.swp
+
+# Doxygen generated output
+docs/
