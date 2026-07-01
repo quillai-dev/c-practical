@@ -1,0 +1,89 @@
+\section{Тема 3. Циклические и итерационные алгоритмы}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Прямоугольник на плоскости $[x_1,x_2]\times[y_1,y_2]$ задаётся
+четырьмя числами (его габаритами). Последовательно вводятся
+габариты прямоугольников; в процессе ввода находить площадь их
+пересечения, не запоминая всех введённых прямоугольников.
+
+\subsection{Математическое обоснование}
+
+Пересечение двух прямоугольников
+$[x_1,x_2]{\times}[y_1,y_2]$ и $[x_1',x_2']{\times}[y_1',y_2']$
+само является прямоугольником
+\[
+  [\max(x_1,x_1'),\,\min(x_2,x_2')] \times
+  [\max(y_1,y_1'),\,\min(y_2,y_2')],
+\]
+если границы по обеим осям не «перевёрнуты» (левая меньше правой,
+нижняя меньше верхней); иначе пересечение пусто.
+
+Поскольку операция пересечения ассоциативна, текущий результат
+$R_i$ можно обновлять по мере ввода $i$-го прямоугольника:
+\[
+  R_i = R_{i-1} \cap P_i,
+\]
+не сохраняя предыдущие прямоугольники в массиве.
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$n$,\ $R \leftarrow P_0$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (loop) {$i := 1,\ n{-}1$};
+  \begin{scope}[local bounding box=sci]
+    \node[shape=trapezium, trapezium left angle=70,
+          trapezium right angle=110, on chain, draw, join=by arrow]
+         {$P_i$};
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$R := R \cap P_i$};
+    \coordinate[on chain, join=by arrow] (lend);
+  \end{scope}
+  \draw[arrow] (sci.south) -| ($(sci.west)-(0.9,0)$) |- (loop);
+  \coordinate[on chain] (sp);
+  \draw[arrow] (loop) -| ($(sci.east)+(0.9,0)$) |- (sp);
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$S := (R_{x2}{-}R_{x1})(R_{y2}{-}R_{y1})$};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$S$};
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t03.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Прямоугольники & Площадь пересечения \\
+\midrule
+$[0,10]{\times}[0,10]$, $[5,15]{\times}[5,15]$ & 25 \\
+$[0,5]{\times}[0,5]$, $[10,15]{\times}[10,15]$ & 0 (не пересекаются) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы} (первый тест):
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите количество прямоугольников: 2
+Первый прямоугольник (x1 y1 x2 y2): 0 0 10 10
+Прямоугольник 2 (x1 y1 x2 y2): 5 5 15 15
+  Пересечение: [5.00,10.00]x[5.00,10.00]
+Площадь итогового пересечения: 25.0000
+\end{lstlisting}

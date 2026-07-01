@@ -1,0 +1,76 @@
+\section{Тема 11. Аналитическая геометрия}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Заданы уравнения двух пересекающихся прямых на плоскости:
+$a_1x+b_1y+c_1=0$ и $a_2x+b_2y+c_2=0$.
+Найти (в градусах и минутах) угол между ними.
+
+\subsection{Математическое обоснование}
+
+Вектор нормали к прямой $a x+by+c=0$ есть $\vec n=(a,b)$.
+Угол между прямыми равен углу между их нормалями (или его
+дополнению до $180°$, поэтому берём острый угол):
+\[
+  \cos\varphi = \frac{|\vec n_1 \cdot \vec n_2|}{|\vec n_1|\,|\vec n_2|}
+  = \frac{|a_1a_2+b_1b_2|}{\sqrt{a_1^2+b_1^2}\sqrt{a_2^2+b_2^2}}.
+\]
+Перевод радиан в градусы и минуты:
+\[
+  \varphi^{\circ} = \lfloor \varphi \cdot 180/\pi \rfloor,\qquad
+  \varphi' = \operatorname{round}\bigl((\varphi\cdot180/\pi - \varphi^\circ)\cdot60\bigr).
+\]
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$a_1,b_1,c_1,\ a_2,b_2,c_2$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$d := a_1a_2+b_1b_2$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$n_1 := \sqrt{a_1^2{+}b_1^2}$,\quad $n_2 := \sqrt{a_2^2{+}b_2^2}$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$\cos\varphi := |d|/(n_1 n_2)$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$\varphi := \arccos(\cos\varphi)$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {${}^\circ,\ '$ из $\varphi$};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$\varphi$};
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t11.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Прямые & Угол \\
+\midrule
+$3x+4y=0$, $4x-3y=0$ & $90°\,0'$ (перпендикулярны) \\
+$x+y=0$, $x-y=0$ & $90°\,0'$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Прямая 1 (a1 b1 c1): 3 4 0
+Прямая 2 (a2 b2 c2): 4 -3 0
+Угол между прямыми: 1.570796 рад = 90° 0'
+\end{lstlisting}

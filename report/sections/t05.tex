@@ -1,0 +1,101 @@
+\section{Тема 5. Векторы и матрицы}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Куб состоит из $N^3$ прозрачных и непрозрачных элементарных
+кубиков, заданных трёхмерным массивом. Построить проекцию куба
+вдоль оси~$Z$: ячейка проекции видима (непрозрачна), если хотя бы
+один из кубиков в соответствующем столбце вдоль оси~$Z$
+непрозрачен.
+
+\subsection{Математическое обоснование}
+
+Пусть $\text{cube}[i][j][k] \in \{0,1\}$ --- признак непрозрачности
+кубика с координатами $(i,j,k)$. Видимость ячейки $(i,j)$ проекции
+на плоскость~$XY$ определяется логическим «ИЛИ» по всем значениям
+$k$:
+\[
+  \text{proj}[i][j] = \bigvee_{k=0}^{N-1} \text{cube}[i][j][k].
+\]
+Общее число непрозрачных кубиков:
+\[
+  \text{total} = \sum_{i,j,k} \text{cube}[i][j][k].
+\]
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$\mathrm{cube}[N][N][N]$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (li) {$i := 0,\ N{-}1$};
+  \begin{scope}[local bounding box=sci]
+    \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+          on chain, draw, join=by arrow]
+         (lj) {$j := 0,\ N{-}1$};
+    \begin{scope}[local bounding box=scj]
+      \node[shape=rectangle, on chain, draw, join=by arrow]
+           {$\mathrm{vis} := 0$};
+      \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+            on chain, draw, join=by arrow]
+           (lk) {$k := 0,\ N{-}1$};
+      \begin{scope}[local bounding box=sck]
+        \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+              minimum width=5.0cm]
+             (c) {$\mathrm{cube}[i][j][k]$?};
+        \node[shape=rectangle, draw, right=2cm of c]
+             (sv) {$\mathrm{vis}:=1$};
+        \draw[arrow] (c.east) -- node[above,font=\scriptsize]{$+$} (sv.west);
+        \coordinate[on chain, join=by arrow] (cke);
+        \draw[arrow] (sv.south) |- (cke);
+      \end{scope}
+      \draw[arrow] (sck.south) -| ($(sck.west)-(0.9,0)$) |- (lk);
+      \coordinate[on chain] (spk);
+      \draw[arrow] (lk) -| ($(sck.east)+(0.9,0)$) |- (spk);
+      \node[shape=trapezium, trapezium left angle=70,
+            trapezium right angle=110, on chain, draw, join=by arrow]
+           {$\mathrm{proj}[i][j] := \mathrm{vis}$};
+      \coordinate[on chain, join=by arrow] (cje);
+    \end{scope}
+    \draw[arrow] (scj.south) -| ($(scj.west)-(1.1,0)$) |- (lj);
+    \coordinate[on chain] (spj);
+    \draw[arrow] (lj) -| ($(scj.east)+(1.1,0)$) |- (spj);
+    \coordinate[on chain, join=by arrow] (cie);
+  \end{scope}
+  \draw[arrow] (sci.south) -| ($(sci.west)-(1.4,0)$) |- (li);
+  \coordinate[on chain] (spi);
+  \draw[arrow] (li) -| ($(sci.east)+(1.4,0)$) |- (spi);
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t05.c}
+
+\subsection{Тестовые данные}
+
+Тестовый куб $3\times3\times3$, где непрозрачен только центральный
+столбец $(1,1,*)$:
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите куб 3x3x3 (1=непрозрачный, 0=прозрачный):
+0 0 0  0 0 0  0 0 0
+0 1 0  0 1 0  0 1 0
+0 0 0  0 0 0  0 0 0
+Проекция по оси Z:
+0 0 0
+0 1 0
+0 0 0
+Всего непрозрачных кубиков: 3 из 27
+\end{lstlisting}

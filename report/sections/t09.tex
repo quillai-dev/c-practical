@@ -1,0 +1,92 @@
+\section{Тема 9. Линейная алгебра и сжатие информации}
+
+\subsection{Постановка задачи (вариант~4)}
+
+В матрице $A(m,n)$ выбран произвольный ненулевой минор $k$-го
+порядка ($k \le m$, $k \le n$): $\det\,(a_{i_pj_q})$, $1\le p,q\le
+k$. Минор задаётся множеством номеров строк и множеством номеров
+столбцов мощности~$k$. Вычислить значение этого минора.
+
+\subsection{Математическое обоснование}
+
+Минор $k$-го порядка матрицы $A$ --- определитель квадратной
+подматрицы, образованной выбранными строками $\{i_1,\ldots,i_k\}$
+и столбцами $\{j_1,\ldots,j_k\}$. Определитель вычисляется
+рекурсивно разложением по первой строке:
+\[
+  \det M = \sum_{c=0}^{k-1} (-1)^{c} \, m_{0c} \, \det M_{0c},
+\]
+где $M_{0c}$~--- подматрица без первой строки и столбца~$c$.
+База рекурсии: $\det$ матрицы $1{\times}1$ равен её единственному
+элементу, $2{\times}2$~--- $m_{00}m_{11}-m_{01}m_{10}$.
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$A(m,n)$,\ $k$,\ строки,\ столбцы};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$M(k,k)$ из $A$};
+  \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+        minimum width=5.2cm]
+       (c1) {$k = 1$\,?};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2cm of c1]
+       (r1) {$m_{00}$};
+  \draw[arrow] (c1.east) -- node[above,font=\scriptsize]{$+$} (r1.west);
+  \node[shape=diamond, aspect=2, on chain, draw,
+        below=14mm of c1, minimum width=5.2cm]
+       (c2) {$k = 2$\,?};
+  \draw[arrow] (c1.south) -- (c2.north);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2cm of c2]
+       (r2) {$m_{00}m_{11}{-}m_{01}m_{10}$};
+  \draw[arrow] (c2.east) -- node[above,font=\scriptsize]{$+$} (r2.west);
+  \node[shape=rectangle, on chain, draw, below=14mm of c2]
+       (rec) {рекурсия по строке 0};
+  \draw[arrow] (c2.south) -- (rec.north);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       (res) {$\det(M)$};
+  \node[draw, rounded corners, on chain, join=by arrow] (end) {End};
+  \draw[arrow] (r1.south) |- (res.east);
+  \draw[arrow] (r2.south) |- (res.east);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t09.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Минор & Значение \\
+\midrule
+$\begin{pmatrix}1&2\\3&4\end{pmatrix}$ & $-2$ \\
+$\begin{pmatrix}1&0&2\\-1&3&1\\2&1&0\end{pmatrix}$ & $-5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы} (минор $2{\times}2$):
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Размеры матрицы M N: 2 2
+Введите матрицу A(2x2):
+1 2
+3 4
+Порядок минора k (<=4): 2
+Введите 2 номеров строк: 0 1
+Введите 2 номеров столбцов: 0 1
+Значение минора: -2.0000
+\end{lstlisting}

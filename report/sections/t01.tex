@@ -1,0 +1,91 @@
+\section{Тема 1. Линейные алгоритмы}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Заданы моменты начала и конца некоторого промежутка времени
+в часах, минутах и секундах (в пределах одних суток).
+Найти продолжительность этого промежутка в тех же единицах
+измерения.
+
+\subsection{Математическое обоснование}
+
+Каждый момент времени переводится в общее число секунд от начала
+суток:
+\[
+  t = h \cdot 3600 + m \cdot 60 + s.
+\]
+Продолжительность промежутка вычисляется как
+\[
+  \Delta t = t_{\text{конец}} - t_{\text{начало}}.
+\]
+Если $\Delta t < 0$ (конец «раньше» начала из-за перехода через
+полночь), к результату добавляется число секунд в сутках:
+\[
+  \Delta t' = \Delta t + 86400.
+\]
+Обратное преобразование в часы, минуты, секунды:
+\[
+  h = \left\lfloor \frac{\Delta t'}{3600} \right\rfloor,\quad
+  m = \left\lfloor \frac{\Delta t' \bmod 3600}{60} \right\rfloor,\quad
+  s = \Delta t' \bmod 60.
+\]
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.2cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$h_1,m_1,s_1,\ h_2,m_2,s_2$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$t_1 := h_1{\cdot}3600+m_1{\cdot}60+s_1$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$t_2 := h_2{\cdot}3600+m_2{\cdot}60+s_2$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       (dt) {$\Delta t := t_2-t_1$};
+  \node[shape=diamond, aspect=2, on chain, draw, join=by arrow]
+       (cond) {$\Delta t < 0$\,?};
+  \node[shape=rectangle, draw, right=2cm of cond]
+       (fix) {$\Delta t := \Delta t+86400$};
+  \node[shape=rectangle, on chain, draw, below=14mm of cond]
+       (calc) {$\Delta h,\Delta m,\Delta s$ из $\Delta t$};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$\Delta h$ ч $\Delta m$ мин $\Delta s$ с};
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+  \draw[arrow] (cond.east) -- node[above,font=\scriptsize]{$+$} (fix.west);
+  \draw[arrow] (fix.south) |- (calc.east);
+  \draw[arrow] (cond.south) -- (calc.north);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t01.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{ll|l}
+\toprule
+Начало & Конец & Продолжительность \\
+\midrule
+10:30:15 & 14:45:50 & 04 ч 15 мин 35 с \\
+23:50:00 & 00:10:00 & 00 ч 20 мин 00 с (переход через полночь) \\
+08:00:00 & 08:00:00 & 00 ч 00 мин 00 с \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы} (первый тест):
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Начало (чч мм сс): 10 30 15
+Конец  (чч мм сс): 14 45 50
+Продолжительность: 04 ч 15 мин 35 с
+\end{lstlisting}

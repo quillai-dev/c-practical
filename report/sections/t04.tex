@@ -1,0 +1,93 @@
+\section{Тема 4. Простейшие операции над массивами}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Вычислить среднее значение $m$ и дисперсию $d$ для заданного массива
+$X(n)$ наблюдений. Дисперсия вычисляется по формуле:
+\[
+  d = \frac{1}{n}\sum_{i=1}^{n} (x_i - m)^2.
+\]
+
+\subsection{Математическое обоснование}
+
+Среднее арифметическое:
+\[
+  m = \frac{1}{n}\sum_{i=1}^{n} x_i.
+\]
+Дисперсия характеризует разброс значений относительно среднего.
+Алгоритм требует двух проходов по массиву: первый --- для
+вычисления~$m$, второй --- для суммирования квадратов отклонений.
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.2cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$n$,\ $X[0..n{-}1]$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$\mathrm{sum} := 0$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (l1) {$i := 0,\ n{-}1$};
+  \begin{scope}[local bounding box=sc1]
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$\mathrm{sum} \mathrel{+}= X[i]$};
+    \coordinate[on chain, join=by arrow] (l1e);
+  \end{scope}
+  \draw[arrow] (sc1.south) -| ($(sc1.west)-(0.8,0)$) |- (l1);
+  \coordinate[on chain] (sp1);
+  \draw[arrow] (l1) -| ($(sc1.east)+(0.8,0)$) |- (sp1);
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$m := \mathrm{sum}/n$,\quad $\mathrm{dsum} := 0$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (l2) {$i := 0,\ n{-}1$};
+  \begin{scope}[local bounding box=sc2]
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$\mathrm{dsum} \mathrel{+}= (X[i]{-}m)^2$};
+    \coordinate[on chain, join=by arrow] (l2e);
+  \end{scope}
+  \draw[arrow] (sc2.south) -| ($(sc2.west)-(0.8,0)$) |- (l2);
+  \coordinate[on chain] (sp2);
+  \draw[arrow] (l2) -| ($(sc2.east)+(0.8,0)$) |- (sp2);
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$d := \mathrm{dsum}/n$};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$m,\ d$};
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t04.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|ll}
+\toprule
+Массив $X$ & $m$ & $d$ \\
+\midrule
+$\{1,2,3,4,5\}$ & 3.0 & 2.0 \\
+$\{10,10,10,10\}$ & 10.0 & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы} (первый тест):
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите количество элементов n: 5
+Введите элементы массива:
+1 2 3 4 5
+Среднее значение m = 3.0000
+Дисперсия d = 2.0000
+\end{lstlisting}

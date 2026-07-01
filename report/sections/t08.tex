@@ -1,0 +1,84 @@
+\section{Тема 8. Геометрия и теория множеств}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Из числового множества мощности $n$ выбрать все подмножества,
+сумма элементов каждого из которых лежит в пределах от $a$ до $b$.
+
+\subsection{Математическое обоснование}
+
+Каждое подмножество $n$-элементного множества соответствует
+$n$-разрядному двоичному числу (маске) от $0$ до $2^n-1$
+(см. также Лаб.~2.1 по дискретной математике, метод двоичного
+счёта). Для каждой маски вычисляется сумма выбранных элементов:
+\[
+  S(\text{mask}) = \sum_{i:\,\text{бит}_i(\text{mask})=1} x_i,
+\]
+и подмножество выводится, если $a \le S(\text{mask}) \le b$.
+Сложность алгоритма~--- $O(n \cdot 2^n)$.
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$n$,\ $X[]$,\ $a$,\ $b$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (loop) {$\mathrm{mask} := 0,\ 2^n{-}1$};
+  \begin{scope}[local bounding box=scl]
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$S := \sum_{i:\,\mathrm{bit}_i} X[i]$};
+    \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+          minimum width=5.2cm]
+         (c) {$a \le S \le b$\,?};
+    \node[shape=trapezium, trapezium left angle=70,
+          trapezium right angle=110, draw, right=2cm of c]
+         (out) {подмножество};
+    \draw[arrow] (c.east) -- node[above,font=\scriptsize]{$+$} (out.west);
+    \coordinate[on chain, join=by arrow] (le);
+    \draw[arrow] (out.south) |- (le);
+  \end{scope}
+  \draw[arrow] (scl.south) -| ($(scl.west)-(0.9,0)$) |- (loop);
+  \coordinate[on chain] (sp);
+  \draw[arrow] (loop) -| ($(scl.east)+(0.9,0)$) |- (sp);
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t08.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Множество, границы & Подмножества \\
+\midrule
+$\{1,2,3\}$, $a=2,b=4$ & $\{2\},\{3\},\{1,2\},\{1,3\}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите мощность множества n: 3
+Введите элементы множества:
+1 2 3
+Введите границы a b: 2 4
+Подмножества с суммой в [2.0, 4.0]:
+  {1,2}  сумма=3
+  {3}  сумма=3
+  {1,3}  сумма=4
+  {2}  сумма=2
+Найдено подмножеств: 4
+\end{lstlisting}

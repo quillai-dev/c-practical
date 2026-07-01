@@ -1,0 +1,85 @@
+\section{Тема 7. Арифметика}
+
+\subsection{Постановка задачи (вариант~4)}
+
+В массиве $X(n)$ хранятся различные вещественные числа (как
+большие, так и меньшие единицы). Округлить их, оставив в каждом
+по 3 значащих цифры.
+
+\subsection{Математическое обоснование}
+
+Для числа $x \ne 0$ найдём порядок старшего разряда:
+\[
+  e = \lfloor \log_{10}|x| \rfloor.
+\]
+Чтобы оставить 3 значащие цифры, умножим число на $10^{2-e}$,
+округлим до целого и разделим обратно:
+\[
+  x' = \frac{\operatorname{round}\bigl(x\cdot10^{2-e}\bigr)}{10^{2-e}}.
+\]
+Например, для $x=0.0034567$: $e=-3$, множитель $10^{5}$, получаем
+$0.00346$.
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$n$,\ $X[0..n{-}1]$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (loop) {$i := 0,\ n{-}1$};
+  \begin{scope}[local bounding box=scl]
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$e := \lfloor\log_{10}|X[i]|\rfloor$};
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$f := 10^{2-e}$};
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$X'[i] := \mathrm{round}(X[i]{\cdot}f)/f$};
+    \node[shape=trapezium, trapezium left angle=70,
+          trapezium right angle=110, on chain, draw, join=by arrow]
+         {$X[i] \to X'[i]$};
+    \coordinate[on chain, join=by arrow] (le);
+  \end{scope}
+  \draw[arrow] (scl.south) -| ($(scl.west)-(0.9,0)$) |- (loop);
+  \coordinate[on chain] (sp);
+  \draw[arrow] (loop) -| ($(scl.east)+(0.9,0)$) |- (sp);
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t07.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Исходное число & Результат (3 значащих цифры) \\
+\midrule
+$123456.789$ & $123000$ \\
+$0.0034567$ & $0.00346$ \\
+$7.5$ & $7.5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите количество элементов n: 3
+Введите элементы массива:
+123456.789 0.0034567 7.5
+Округлённые значения (3 значащие цифры):
+  123457 -> 123000
+  0.0034567 -> 0.00346
+  7.5 -> 7.5
+\end{lstlisting}

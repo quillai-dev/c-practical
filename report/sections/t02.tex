@@ -1,0 +1,105 @@
+\section{Тема 2. Разветвляющиеся алгоритмы}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Четырёхугольник $ABCD$ задан координатами своих вершин на плоскости:
+$A(x_1,y_1)$, $B(x_2,y_2)$, $C(x_3,y_3)$, $D(x_4,y_4)$.
+Определить тип четырёхугольника: прямоугольник, параллелограмм,
+трапеция, произвольный четырёхугольник.
+
+\subsection{Математическое обоснование}
+
+Две стороны $AB$ и $CD$ параллельны, если векторное произведение
+направляющих векторов равно нулю:
+\[
+  \vec{AB} \times \vec{DC} = 0
+  \;\Leftrightarrow\;
+  (x_2{-}x_1)(y_4{-}y_3) - (y_2{-}y_1)(x_4{-}x_3) = 0.
+\]
+Аналогично проверяется параллельность $BC$ и $AD$.
+Если обе пары противоположных сторон параллельны~--- это
+параллелограмм; если параллельна ровно одна пара~--- трапеция;
+если ни одна~--- произвольный четырёхугольник.
+
+Параллелограмм является прямоугольником, если смежные стороны
+перпендикулярны:
+\[
+  \vec{AB} \cdot \vec{AD} = 0.
+\]
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.4cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$A,B,C,D$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$p_1 := \mathrm{par}(AB,DC)$,\quad $p_2 := \mathrm{par}(BC,AD)$};
+  \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+        minimum width=5.6cm]
+       (c1) {$p_1 \wedge p_2$\,?};
+  \node[shape=diamond, aspect=2, draw, right=2.4cm of c1,
+        minimum width=4.6cm]
+       (c2) {$AB \perp AD$\,?};
+  \draw[arrow] (c1.east) -- node[above,font=\scriptsize]{$+$} (c2.west);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, above right=5mm and 5mm of c2]
+       (rect) {«Прямоугольник»};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, below right=5mm and 5mm of c2]
+       (par) {«Параллелограмм»};
+  \draw[arrow] (c2.north east) -- node[above,font=\scriptsize]{$+$} (rect.west);
+  \draw[arrow] (c2.south east) -- (par.west);
+  \node[shape=diamond, aspect=2, on chain, draw,
+        below=16mm of c1, minimum width=5.6cm]
+       (c3) {$p_1 \vee p_2$\,?};
+  \draw[arrow] (c1.south) -- (c3.north);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2.4cm of c3]
+       (trap) {«Трапеция»};
+  \draw[arrow] (c3.east) -- node[above,font=\scriptsize]{$+$} (trap.west);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, below=12mm of c3]
+       (arb) {«Произвольный»};
+  \draw[arrow] (c3.south) -- (arb.north);
+  \node[draw, rounded corners, on chain, draw, below=10mm of arb]
+       (end) {End};
+  \draw[arrow] (arb.south) -- (end.north);
+  \draw[arrow] (rect.south) |- (end.east);
+  \draw[arrow] (par.south)  |- (end.east);
+  \draw[arrow] (trap.south) |- (end.east);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t02.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Вершины $A,B,C,D$ & Результат \\
+\midrule
+$(0,0),(4,0),(4,3),(0,3)$ & Прямоугольник \\
+$(0,0),(4,0),(5,3),(1,3)$ & Параллелограмм \\
+$(0,0),(4,0),(3,2),(1,2)$ & Трапеция \\
+$(0,0),(4,0),(3,2),(0,3)$ & Произвольный четырёхугольник \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы} (первый тест):
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите координаты A B C D (x y для каждой):
+0 0  4 0  4 3  0 3
+Прямоугольник
+\end{lstlisting}

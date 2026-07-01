@@ -1,0 +1,72 @@
+\section{Тема 10. Алгоритмы обработки символьной информации}
+
+\subsection{Постановка задачи (вариант~4)}
+
+В заданном тексте найти самое длинное слово и самую длинную фразу.
+Фразой считается последовательность символов между знаками
+завершения предложения (\texttt{.}, \texttt{!}, \texttt{?}).
+
+\subsection{Математическое обоснование}
+
+Текст обрабатывается за один линейный проход. Слова выделяются
+как максимальные подпоследовательности буквенных символов;
+по ходу прохода ведётся текущая длина слова~$w$ и максимальная
+длина $w_{\max}$. Аналогично для фраз~--- ведётся текущая
+длина~$p$ и максимальная~$p_{\max}$, со сбросом при встрече
+разделителя предложения. Сложность~--- $O(L)$, где $L$~--- длина
+текста.
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$T$};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (loop) {$i := 0,\ |T|$};
+  \begin{scope}[local bounding box=scl]
+    \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+          minimum width=5.0cm]
+         (c) {$T[i]$ -- буква?};
+    \node[shape=rectangle, draw, right=2cm of c]
+         (wa) {$w \mathrel{+}= 1$};
+    \draw[arrow] (c.east) -- node[above,font=\scriptsize]{$+$} (wa.west);
+    \node[shape=rectangle, on chain, draw, below=14mm of c]
+         (wu) {$w_{\max}$ обновить,\ $w:=0$};
+    \draw[arrow] (c.south) -- (wu.north);
+    \draw[arrow] (wa.south) |- (wu.east);
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$p_{\max}$ обновить при \texttt{.!?}};
+    \coordinate[on chain, join=by arrow] (le);
+  \end{scope}
+  \draw[arrow] (scl.south) -| ($(scl.west)-(0.9,0)$) |- (loop);
+  \coordinate[on chain] (sp);
+  \draw[arrow] (loop) -| ($(scl.east)+(0.9,0)$) |- (sp);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$w_{\max}$,\ $p_{\max}$};
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t10.c}
+
+\subsection{Тестовые данные}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Введите текст (одна строка):
+Программирование является увлекательным занятием. Алгоритмы важны!
+Самое длинное слово: "Программирование" (17 букв)
+Самая длинная фраза: " Программирование является увлекательным занятием"
+\end{lstlisting}

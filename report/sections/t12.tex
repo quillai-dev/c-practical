@@ -1,0 +1,88 @@
+\section{Тема 12. Кривые второго порядка на плоскости}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Из круга радиуса $R$ вырезан прямоугольник со сторонами $w$ и $h$,
+расположенный произвольно: с центром $(c_x,c_y)$ и углом
+поворота~$\theta$ относительно координатных осей.
+Найти координаты его четырёх вершин.
+
+\subsection{Математическое обоснование}
+
+В локальной (неповёрнутой) системе координат вершины прямоугольника
+с центром в начале координат:
+\[
+  (\pm w/2,\,\pm h/2).
+\]
+Поворот точки $(dx,dy)$ на угол~$\theta$ выполняется матрицей
+поворота:
+\[
+  \begin{pmatrix}x'\\y'\end{pmatrix} =
+  \begin{pmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{pmatrix}
+  \begin{pmatrix}dx\\dy\end{pmatrix}.
+\]
+Итоговые координаты вершины:
+\[
+  (c_x + x',\; c_y + y').
+\]
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$c_x,c_y,\ w,h,\ \theta$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$dx[4],\ dy[4]$ -- локальные вершины};
+  \node[shape=chamfered rectangle, chamfered rectangle xsep=10pt,
+        on chain, draw, join=by arrow]
+       (loop) {$i := 0,\ 3$};
+  \begin{scope}[local bounding box=scl]
+    \node[shape=rectangle, on chain, draw, join=by arrow]
+         {$(x',y') :=$ поворот $(dx_i,dy_i)$ на $\theta$};
+    \node[shape=trapezium, trapezium left angle=70,
+          trapezium right angle=110, on chain, draw, join=by arrow]
+         {$(c_x{+}x',\ c_y{+}y')$};
+    \coordinate[on chain, join=by arrow] (le);
+  \end{scope}
+  \draw[arrow] (scl.south) -| ($(scl.west)-(0.9,0)$) |- (loop);
+  \coordinate[on chain] (sp);
+  \draw[arrow] (loop) -| ($(scl.east)+(0.9,0)$) |- (sp);
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t12.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Параметры & Вершины \\
+\midrule
+$c=(0,0),\,w=2,h=2,\theta=0°$ & $(1,1),(-1,1),(-1,-1),(1,-1)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы} (центр $(5,5)$, $2{\times}3$, поворот $45°$):
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Центр прямоугольника (cx cy): 5 5
+Ширина и высота (w h): 2 3
+Угол поворота (градусы): 45
+Вершины прямоугольника:
+  (5.3536, 3.2322)
+  (6.7678, 4.6464)
+  (4.6464, 6.7678)
+  (3.2322, 5.3536)
+\end{lstlisting}

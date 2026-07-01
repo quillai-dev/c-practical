@@ -1,0 +1,91 @@
+\section{Тема 15. Поверхность второго порядка в трёхмерном пространстве}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Эллипсоид с полуосями $a,b,c$ задан каноническим уравнением
+\[
+  \frac{x^2}{a^2}+\frac{y^2}{b^2}+\frac{z^2}{c^2}=1.
+\]
+Определить, лежит ли заданная точка $(x,y,z)$ внутри, на
+поверхности или вне эллипсоида.
+
+\subsection{Математическое обоснование}
+
+Введём функцию
+\[
+  f(x,y,z) = \frac{x^2}{a^2}+\frac{y^2}{b^2}+\frac{z^2}{c^2}.
+\]
+Тогда:
+\begin{itemize}
+  \item если $f=1$ (с учётом погрешности $\varepsilon$), точка
+        лежит \emph{на поверхности} эллипсоида;
+  \item если $f<1$, точка \emph{внутри};
+  \item если $f>1$, точка \emph{вне} эллипсоида.
+\end{itemize}
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$a,b,c$;\ $x,y,z$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$f := x^2/a^2{+}y^2/b^2{+}z^2/c^2$};
+  \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+        minimum width=5.6cm]
+       (c1) {$|f{-}1| < \varepsilon$\,?};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2.2cm of c1]
+       (s1) {«На поверхности»};
+  \draw[arrow] (c1.east) -- node[above,font=\scriptsize]{$+$} (s1.west);
+  \node[shape=diamond, aspect=2, on chain, draw,
+        below=14mm of c1, minimum width=5.2cm]
+       (c2) {$f < 1$\,?};
+  \draw[arrow] (c1.south) -- (c2.north);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2.2cm of c2]
+       (s2) {«Внутри»};
+  \draw[arrow] (c2.east) -- node[above,font=\scriptsize]{$+$} (s2.west);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, below=14mm of c2]
+       (s3) {«Вне»};
+  \draw[arrow] (c2.south) -- (s3.north);
+  \node[draw, rounded corners, on chain, draw, below=10mm of s3]
+       (end) {End};
+  \draw[arrow] (s3.south) -- (end.north);
+  \draw[arrow] (s1.south) |- (end.east);
+  \draw[arrow] (s2.south) |- (end.east);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t15.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Эллипсоид, точка & Результат \\
+\midrule
+$a{=}b{=}c{=}1$, $(0,0,0)$ & Внутри ($f=0$) \\
+$a{=}b{=}c{=}1$, $(1,0,0)$ & На поверхности ($f=1$) \\
+$a{=}2,b{=}1,c{=}1$, $(3,0,0)$ & Вне ($f=2.25$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Полуоси эллипсоида (a b c): 1 1 1
+Точка (x y z): 1 0 0
+Точка лежит на поверхности эллипсоида (f=1.000000)
+\end{lstlisting}

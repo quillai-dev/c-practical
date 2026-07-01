@@ -1,0 +1,92 @@
+\section{Тема 13. Графическое решение систем уравнений}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Решить систему линейных уравнений с двумя неизвестными
+\[
+  \begin{cases} a_1x+b_1y=c_1\\ a_2x+b_2y=c_2 \end{cases}
+\]
+методом Крамера, классифицируя случаи единственного решения,
+отсутствия решений и бесконечного множества решений.
+
+\subsection{Математическое обоснование}
+
+Главный определитель и вспомогательные определители:
+\[
+  \Delta = \begin{vmatrix}a_1&b_1\\a_2&b_2\end{vmatrix} = a_1b_2-a_2b_1,\quad
+  \Delta_x = \begin{vmatrix}c_1&b_1\\c_2&b_2\end{vmatrix},\quad
+  \Delta_y = \begin{vmatrix}a_1&c_1\\a_2&c_2\end{vmatrix}.
+\]
+Если $\Delta \ne 0$, система имеет единственное решение
+$x=\Delta_x/\Delta,\;y=\Delta_y/\Delta$ (геометрически~--- точка
+пересечения двух прямых). Если $\Delta=0$ и $\Delta_x=\Delta_y=0$,
+прямые совпадают (бесконечно много решений). Если $\Delta=0$,
+но хотя бы один из $\Delta_x,\Delta_y \ne 0$, прямые параллельны
+(решений нет).
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.4cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$a_1,b_1,c_1,\ a_2,b_2,c_2$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$\Delta,\ \Delta_x,\ \Delta_y$};
+  \node[shape=diamond, aspect=2, on chain, draw, join=by arrow,
+        minimum width=5.2cm]
+       (c1) {$\Delta \ne 0$\,?};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2.2cm of c1]
+       (out1) {$x,\ y$};
+  \draw[arrow] (c1.east) -- node[above,font=\scriptsize]{$+$} (out1.west);
+  \node[shape=diamond, aspect=2, on chain, draw,
+        below=14mm of c1, minimum width=5.4cm]
+       (c2) {$\Delta_x{=}\Delta_y{=}0$\,?};
+  \draw[arrow] (c1.south) -- (c2.north);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, draw, right=2.2cm of c2]
+       (out2) {«$\infty$ решений»};
+  \draw[arrow] (c2.east) -- node[above,font=\scriptsize]{$+$} (out2.west);
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, below=14mm of c2]
+       (out3) {«Нет решений»};
+  \draw[arrow] (c2.south) -- (out3.north);
+  \node[draw, rounded corners, on chain, draw, below=10mm of out3]
+       (end) {End};
+  \draw[arrow] (out3.south) -- (end.north);
+  \draw[arrow] (out1.south) |- (end.east);
+  \draw[arrow] (out2.south) |- (end.east);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t13.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Система & Результат \\
+\midrule
+$x+y=3,\;x-y=1$ & $x=2,\,y=1$ \\
+$x+y=2,\;2x+2y=4$ & Бесконечно много решений \\
+$x+y=2,\;x+y=5$ & Решений нет \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Уравнение 1 (a1 b1 c1): 1 1 3
+Уравнение 2 (a2 b2 c2): 1 -1 1
+Единственное решение: x=2.0000, y=1.0000
+\end{lstlisting}

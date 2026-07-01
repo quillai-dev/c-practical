@@ -1,0 +1,75 @@
+\section{Тема 14. Плоскость в трёхмерном пространстве}
+
+\subsection{Постановка задачи (вариант~4)}
+
+Плоскость в пространстве задана общим уравнением
+$Ax+By+Cz+D=0$. Найти расстояние от заданной точки $(x_0,y_0,z_0)$
+до этой плоскости и координаты проекции точки на плоскость.
+
+\subsection{Математическое обоснование}
+
+Расстояние от точки до плоскости вычисляется по формуле:
+\[
+  \rho = \frac{|Ax_0+By_0+Cz_0+D|}{\sqrt{A^2+B^2+C^2}}.
+\]
+Проекция точки на плоскость находится движением вдоль вектора
+нормали $\vec n=(A,B,C)$ на параметр
+\[
+  t = -\frac{Ax_0+By_0+Cz_0+D}{A^2+B^2+C^2},
+\]
+так что координаты проекции:
+\[
+  (x_0+At,\;y_0+Bt,\;z_0+Ct).
+\]
+
+\subsection{Блок-схема алгоритма}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=10mm, start chain=going below,
+  nodes={draw=black, top color=white, bottom color=lightgray!50,
+         minimum width=5.6cm, align=center, font=\small},
+  arrow/.style={->, >=Stealth, thick},
+]
+  \node[draw, rounded corners, on chain] {Start};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$A,B,C,D$;\ $x_0,y_0,z_0$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$\|n\| := \sqrt{A^2{+}B^2{+}C^2}$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$t := -(Ax_0{+}By_0{+}Cz_0{+}D)/\|n\|^2$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$\rho := |Ax_0{+}By_0{+}Cz_0{+}D|/\|n\|$};
+  \node[shape=rectangle, on chain, draw, join=by arrow]
+       {$Q := (x_0{+}At,\ y_0{+}Bt,\ z_0{+}Ct)$};
+  \node[shape=trapezium, trapezium left angle=70,
+        trapezium right angle=110, on chain, draw, join=by arrow]
+       {$\rho$,\ $Q$};
+  \node[draw, rounded corners, on chain, join=by arrow] {End};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Текст программы}
+
+\lstinputlisting[style=Cstyle]{../src/t14.c}
+
+\subsection{Тестовые данные}
+
+\begin{center}
+\begin{tabular}{l|l}
+\toprule
+Плоскость, точка & Расстояние, проекция \\
+\midrule
+$z=0$, $(1,2,5)$ & $\rho=5$, проекция $(1,2,0)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Результат выполнения программы:}
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single]
+Коэффициенты плоскости (A B C D): 0 0 1 0
+Точка (x0 y0 z0): 1 2 5
+Расстояние от точки до плоскости: 5.0000
+Проекция точки на плоскость: (1.0000, 2.0000, 0.0000)
+\end{lstlisting}
