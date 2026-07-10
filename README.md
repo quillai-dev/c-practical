@@ -656,9 +656,8 @@ make report-clean  # removes LaTeX auxiliary files
 
 ## Author
 
-**Quillai Mohammed Eisa** (ГУЙЛАЙ Мохаммед Эйса Мохаммед)  
-Group ВТ-252  
-Supervisors: доц. Островский А.М. · асс. Стеценко О.Н.
+**Quillai Mohammed Eisa** (ГУЙЛАЙ Мохаммед Эйса Мохаммед)   
+
 
 ---
 
